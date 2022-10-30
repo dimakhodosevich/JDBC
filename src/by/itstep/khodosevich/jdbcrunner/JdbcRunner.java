@@ -1,23 +1,19 @@
 package by.itstep.khodosevich.jdbcrunner;
 
+import by.itstep.khodosevich.jdbcrunner.util.ConnectionManager;
 import org.postgresql.Driver;
 
-import javax.swing.*;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
+
 public class JdbcRunner {
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws SQLException {
         Class<Driver> driverClass = Driver.class;
 
-        String password = "postgres";
-        String user = "postgres";
-        String url = "jdbc:postgresql://localhost:5433/flight_repository";
-
-        try {
-            DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        try (var connection = ConnectionManager.open();
+        ) {
+            System.out.println(connection.getTransactionIsolation());
         }
     }
 }

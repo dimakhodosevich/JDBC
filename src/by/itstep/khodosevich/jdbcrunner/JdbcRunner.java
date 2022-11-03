@@ -18,10 +18,33 @@ public class JdbcRunner {
 //
 //        List<Long> ticketsByFlightId = getTicketsByFlightId(flightId);
 //        System.out.println(ticketsByFlightId);
-        List<Long> flightsBetween = getFlightsBetween(LocalDate.of(2020, 1, 1).atStartOfDay(),
-                LocalDateTime.now());
-        System.out.println(flightsBetween);
+//        List<Long> flightsBetween = getFlightsBetween(LocalDate.of(2020, 1, 1).atStartOfDay(),
+//                LocalDateTime.now());
+//        System.out.println(flightsBetween);
 
+        checkMetaData();
+    }
+
+    public static void checkMetaData() {
+        try (Connection connection = ConnectionManager.open()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet catalogs = metaData.getCatalogs();
+            while (catalogs.next()) {
+                System.out.println(catalogs.getString(1));
+                ResultSet schemas = metaData.getSchemas();
+                while (schemas.next()) {
+                    System.out.println(schemas.getString("TABLE_SCHEM"));
+                    ResultSet tables = metaData.getTables(null, null, "%s", null);
+                    while (tables.next()) {
+                        System.out.println(tables.getString("TABLE_NAME"));
+                    }
+                }
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static List<Long> getTicketsByFlightId(Long flightId) {
@@ -49,7 +72,7 @@ public class JdbcRunner {
         return result;
     }
 
-    private static List<Long> getFlightsBetween(LocalDateTime start, LocalDateTime end){
+    private static List<Long> getFlightsBetween(LocalDateTime start, LocalDateTime end) {
         String sql = """
                 SELECT id 
                 FROM flight
@@ -57,21 +80,20 @@ public class JdbcRunner {
                 """;
 
         List<Long> result = new ArrayList<>();
-        try(Connection connection = ConnectionManager.open();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql))
-            {
-                preparedStatement.setFetchSize(20); // install size of our date which load from BD
-                preparedStatement.setQueryTimeout(10); // install time of our connection
-                preparedStatement.setMaxRows(50); // make limit
+        try (Connection connection = ConnectionManager.open();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setFetchSize(20); // install size of our date which load from BD
+            preparedStatement.setQueryTimeout(10); // install time of our connection
+            preparedStatement.setMaxRows(50); // make limit
 
             System.out.println(preparedStatement);
-            preparedStatement.setTimestamp(1,Timestamp.valueOf(start));
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(start));
             System.out.println(preparedStatement);
-            preparedStatement.setTimestamp(2,Timestamp.valueOf(end));
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(end));
             System.out.println(preparedStatement);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 result.add(resultSet.getLong("id"));
             }
         } catch (SQLException e) {

@@ -58,7 +58,12 @@ public class JdbcRunner {
 
         List<Long> result = new ArrayList<>();
         try(Connection connection = ConnectionManager.open();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            PreparedStatement preparedStatement = connection.prepareStatement(sql))
+            {
+                preparedStatement.setFetchSize(20); // install size of our date which load from BD
+                preparedStatement.setQueryTimeout(10); // install time of our connection
+                preparedStatement.setMaxRows(50); // make limit
+
             System.out.println(preparedStatement);
             preparedStatement.setTimestamp(1,Timestamp.valueOf(start));
             System.out.println(preparedStatement);

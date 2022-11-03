@@ -1,6 +1,7 @@
 package by.itstep.khodosevich.jdbcrunner.util;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -17,7 +18,8 @@ public class ConnectionManager {
         //            before java 1.8 you have to manually load class
         try {
             Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
+//            DriverManager.registerDriver(new org.postgresql.Driver());
+            } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

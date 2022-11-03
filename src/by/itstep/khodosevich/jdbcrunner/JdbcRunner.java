@@ -38,7 +38,27 @@ public class JdbcRunner {
                             "%", null);
                     if (schem.equals("public")) {
                         while (tables.next()) {
+
+                            if (!tables.getString("TABLE_NAME").equals("aircraft")) {
+                                continue;
+                            }
+
+                            System.out.println("-------------------");
                             System.out.println(tables.getString("TABLE_NAME"));
+                            ResultSet columns =
+                                    metaData.getColumns(catalog,
+                                            schem,
+                                            tables.getString("TABLE_NAME"),
+                                            null);
+
+
+                            while (columns.next()) {
+
+                                    System.out.println(columns.getString("COLUMN_NAME"));
+
+                            }
+                            System.out.println("-------------------");
+
                         }
                     }
                 }

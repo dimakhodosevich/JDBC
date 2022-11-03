@@ -30,15 +30,19 @@ public class JdbcRunner {
             DatabaseMetaData metaData = connection.getMetaData();
             ResultSet catalogs = metaData.getCatalogs();
             while (catalogs.next()) {
-                System.out.println(catalogs.getString(1));
+                String catalog = catalogs.getString(1);
                 ResultSet schemas = metaData.getSchemas();
                 while (schemas.next()) {
-                    System.out.println(schemas.getString("TABLE_SCHEM"));
-                    ResultSet tables = metaData.getTables(null, null, "%s", null);
-                    while (tables.next()) {
-                        System.out.println(tables.getString("TABLE_NAME"));
+                    String schem = schemas.getString("TABLE_SCHEM");
+                    ResultSet tables = metaData.getTables(catalog, schem,
+                            "%", null);
+                    if (schem.equals("public")) {
+                        while (tables.next()) {
+                            System.out.println(tables.getString("TABLE_NAME"));
+                        }
                     }
                 }
+
             }
 
 

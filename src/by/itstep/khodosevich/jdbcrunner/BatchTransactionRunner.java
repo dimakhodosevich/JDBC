@@ -5,39 +5,32 @@ import by.itstep.khodosevich.jdbcrunner.util.ConnectionManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.sql.Statement;
+import java.util.Arrays;
 
-public class TransactionRunner {
+public class BatchTransactionRunner {
     public static void main(String[] args) {
 
-        String deleteTicketSql = """
-                DELETE FROM ticket WHERE flight_id = ?""";
-
         Long flightId = 9L;
+        String deleteTicketSql = """
+                DELETE FROM ticket WHERE flight_id = """ + flightId;
+
         String deleteFlightSql = """
-                DELETE FROM flight WHERE id = ?""";
+                DELETE FROM flight WHERE id = """ + flightId;
 
         Connection connection = null;
-        PreparedStatement deleteFlightStatement = null;
-        PreparedStatement deleteTicketStatement = null;
-
+        Statement statement = null;
 
         try {
             connection = ConnectionManager.open();
-            deleteFlightStatement = connection.prepareStatement(deleteFlightSql);
-            deleteTicketStatement = connection.prepareStatement(deleteTicketSql);
             connection.setAutoCommit(false); // on default = true; do it in all operations;
 
-            deleteFlightStatement.setLong(1, flightId);
-            deleteTicketStatement.setLong(1, flightId);
+            statement = connection.createStatement();
+            statement.addBatch(deleteTicketSql);
+            statement.addBatch(deleteFlightSql);
 
-            deleteTicketStatement.executeUpdate();
-
-            if (true) {
-                throw new RuntimeException("Oops");
-            }
-
-            deleteFlightStatement.executeUpdate();
+            int[] executeBatch = statement.executeBatch();
+            System.out.println(Arrays.toString(executeBatch));
             connection.commit();
         } catch (SQLException e) {
             if (connection != null) {
@@ -48,6 +41,7 @@ public class TransactionRunner {
                 }
             }
         } finally {
+
             if (connection != null) {
                 try {
                     connection.close();
@@ -56,21 +50,15 @@ public class TransactionRunner {
                 }
             }
 
-            if (deleteFlightSql != null) {
+            if (statement != null) {
                 try {
-                    deleteFlightStatement.close();
+                    statement.close();
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
             }
 
-            if (deleteTicketSql != null) {
-                try {
-                    deleteTicketStatement.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
         }
     }
+
 }

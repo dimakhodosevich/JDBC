@@ -88,6 +88,7 @@ getImage();
             System.out.println(executeUpdate);
             connection.commit();
 
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

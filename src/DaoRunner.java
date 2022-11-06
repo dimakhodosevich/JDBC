@@ -2,12 +2,26 @@ import by.itstep.khodosevich.jdbcrunner.dao.TicketDao;
 import by.itstep.khodosevich.jdbcrunner.entity.Ticket;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public class DaoRunner {
 
     public static void main(String[] args) {
-//        saveTest();
-        deleteTest();
+        getAllTickets();
+
+
+        //findByIdAndUpdate
+        //        saveTest();
+        //        deleteTest();
+    }
+
+    private static void getAllTickets() {
+        TicketDao ticketDao = TicketDao.getInstance();
+        for (Ticket ticket:
+             ticketDao.findALL()) {
+            System.out.println(ticket);
+            System.out.println();
+        }
     }
 
     public static void deleteTest() {
@@ -29,5 +43,17 @@ public class DaoRunner {
         Ticket save = ticketDao.save(ticket);
         System.out.println(save);
 
+    }
+
+    public static void findByIdAndUpdate() {
+        TicketDao ticketDao = TicketDao.getInstance();
+        Optional<Ticket> maybeTicket = ticketDao.findById(2L);
+
+        maybeTicket.ifPresent(ticket -> {
+            ticket.setCost(BigDecimal.valueOf(188.88));
+            ticketDao.update(ticket);
+        });
+
+        System.out.println(maybeTicket);
     }
 }

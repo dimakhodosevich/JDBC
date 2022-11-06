@@ -13,7 +13,7 @@ public class JdbcPoolRunner {
         try{
         checkMetaData();
         } finally {
-            ConnectionPool.closePool();
+//            ConnectionPool.closePool();
         }
     }
 

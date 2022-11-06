@@ -4,6 +4,7 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -52,6 +53,7 @@ public class ConnectionPool {
         int blockingQueueSize = Integer.parseInt(result);
 
         pool = new ArrayBlockingQueue<>(blockingQueueSize);
+        sourceConnections = new ArrayList<>(blockingQueueSize);
 
         for (int i = 0; i < blockingQueueSize; i++) {
             Connection connection = open();

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static by.itstep.khodosevich.jdbcrunner.entity.Ticket.buildTicket;
 
@@ -181,12 +182,26 @@ public class TicketDao {
 
     public List<Ticket> findAll(TicketFilter filter) {
         List<Object> parameters = new ArrayList<>();
+        List<String> whereSql = new ArrayList<>();
+        if(filter.seatNo()!=null){
+            whereSql.add("seat_no LIKE ?");
+            parameters.add("%" + filter.seatNo() + "%");
+
+        }
+
+        if(filter.passengerName()!=null){
+            whereSql.add("passenger_name = ?");
+            parameters.add(filter.passengerName());
+        }
+
         parameters.add(filter.limit());
         parameters.add(filter.offset());
+        String where
+                = whereSql
+                .stream()
+                .collect(Collectors.joining(" AND ", " WHERE ", " LIMIT ? OFFSET ?"));
 
-        String sql = FIND_ALL_SQL + """
-                LIMIT ? 
-                OFFSET ?""";
+        String sql = FIND_ALL_SQL + where;
         ArrayList<Ticket> tickets = new ArrayList<>();
 
         try (Connection connection = ConnectionPool.get();
@@ -198,7 +213,7 @@ public class TicketDao {
                 preparedStatement.setObject(i+1, parameters.get(i));
             }
 //            This is our prepare statement:
-//            System.out.println(preparedStatement);
+            System.out.println(preparedStatement);
             ResultSet resultSet = preparedStatement.executeQuery();
 
 

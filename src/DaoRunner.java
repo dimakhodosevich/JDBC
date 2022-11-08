@@ -9,7 +9,7 @@ import java.util.Optional;
 public class DaoRunner {
 
     public static void main(String[] args) {
-        TicketFilter filter = new TicketFilter(3,2);
+        TicketFilter filter = new TicketFilter(3,2, null, "A1");
         List<Ticket> tickets = TicketDao.getInstance().findAll(filter);
         tickets.stream().forEach(ticket -> System.out.println(ticket));
 

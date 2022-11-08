@@ -1,13 +1,19 @@
 import by.itstep.khodosevich.jdbcrunner.dao.TicketDao;
+import by.itstep.khodosevich.jdbcrunner.dto.TicketFilter;
 import by.itstep.khodosevich.jdbcrunner.entity.Ticket;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 public class DaoRunner {
 
     public static void main(String[] args) {
-        getAllTickets();
+        TicketFilter filter = new TicketFilter(3,2);
+        List<Ticket> tickets = TicketDao.getInstance().findAll(filter);
+        tickets.stream().forEach(ticket -> System.out.println(ticket));
+
+//        getAllTickets();
 
 
         //findByIdAndUpdate

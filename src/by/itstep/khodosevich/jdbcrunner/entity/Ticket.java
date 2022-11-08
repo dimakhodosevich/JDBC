@@ -1,6 +1,8 @@
 package by.itstep.khodosevich.jdbcrunner.entity;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Ticket {
     private Long id;
@@ -70,7 +72,20 @@ public class Ticket {
         this.cost = cost;
     }
 
-
+    public static Ticket buildTicket(ResultSet resultSet) {
+        Ticket ticket = null;
+        try {
+            ticket = new Ticket(resultSet.getLong("id"),
+                    resultSet.getString("passenger_no"),
+                    resultSet.getString("passenger_name"),
+                    resultSet.getLong("flight_id"),
+                    resultSet.getString("seat_no"),
+                    resultSet.getBigDecimal("cost"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return ticket;
+    }
 
     @Override
     public String toString() {
